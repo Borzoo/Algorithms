@@ -59,6 +59,30 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
         }
     }
 
+    private[datastructures] def rightRotate(node: Node): Unit = {
+        if(node.left == nil)
+            throw new IllegalStateException()
+    }
+
+    private[datastructures] def leftRotate(node: Node): Unit = {
+        if(node.right == nil)
+            throw new IllegalStateException()
+
+        val right = node.right
+        node.right = right.left
+
+        if(right.left != nil)
+            right.left.parent = node
+
+        right.parent = node.parent
+        right.left = node
+        node.parent = right
+
+        if(node == root) {
+            root = right
+        }
+    }
+
     sealed trait NodeColor {
     }
 
@@ -66,7 +90,9 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
                     , var color: NodeColor
                     , var parent: Node
                     , var left: Node
-                    , var right: Node)
+                    , var right: Node){
+        override def toString: String = value.getOrElse("empty").toString
+    }
 
     private[datastructures] object NodeColor {
 
