@@ -45,7 +45,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
             def insert(): Unit = {
                 y match {
                     case `nil` =>
-                        val node = Node(Some(value), NodeColor.Black, x, nil, nil)
+                        val node = Node(Some(value), NodeColor.Red, x, nil, nil)
                         if (ord.gt(value,  x.value.get)) {
                             x.right = node
                         }

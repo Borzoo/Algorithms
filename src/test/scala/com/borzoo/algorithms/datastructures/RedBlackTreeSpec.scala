@@ -154,5 +154,26 @@ class RedBlackTreeSpec extends AnyFunSpec with Matchers {
                 rbt.root.right should equal(root.right)
             }
         }
+
+        describe("when a node is inserted"){
+            it("should be black when the node is root"){
+                val rbt = new RedBlackTree[Int]()
+                rbt.insert(1)
+                rbt.insert(2)
+
+                rbt.root should matchPattern { case rbt.Node(Some(1), rbt.NodeColor.Black, rbt.nil, rbt.nil, rbt.nil) => }
+            }
+
+            it("should be red when its parent is black"){
+                val rbt = new RedBlackTree[Int]()
+                rbt.insert(2)
+                rbt.insert(1)
+                rbt.insert(3)
+                val root = rbt.root;
+
+                rbt.root.right should matchPattern { case rbt.Node(Some(3), rbt.NodeColor.Red, `root`, rbt.nil, rbt.nil) => }
+                rbt.root.left should matchPattern { case rbt.Node(Some(1), rbt.NodeColor.Red, `root`, rbt.nil, rbt.nil) => }
+            }
+        }
     }
 }
