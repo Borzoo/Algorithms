@@ -26,5 +26,20 @@ class RedBlackTreeSpec extends AnyFunSpec with Matchers {
                 })
             }
         }
+
+        describe("when not empty"){
+            it("should have a black root with a nil parent"){
+                forEvery(List(
+                    List(1),
+                    List(1, 2, 3, 4, 5),
+                    List(5, 4, 3, 2, 1),
+                    List(3, 5, 4, 1, 2),
+                ))(testCase => {
+                    val rbt = new RedBlackTree[Int]()
+                    testCase.foreach(rbt.insert)
+                    rbt.root should matchPattern { case rbt.Node(Some(_), rbt.NodeColor.Black, rbt.nil, _, _) => }
+                })
+            }
+        }
     }
 }

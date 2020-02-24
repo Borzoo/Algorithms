@@ -62,13 +62,13 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
     sealed trait NodeColor {
     }
 
-    case class Node(value: Option[T]
-                    , color: NodeColor
+    private[datastructures] case class Node(value: Option[T]
+                    , var color: NodeColor
                     , var parent: Node
                     , var left: Node
                     , var right: Node)
 
-    object NodeColor {
+    private[datastructures] object NodeColor {
 
         case object Red extends NodeColor
 
