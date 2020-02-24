@@ -118,5 +118,41 @@ class RedBlackTreeSpec extends AnyFunSpec with Matchers {
                 root should matchPattern { case rbt.Node(Some(1), _, `left`, `leftRight`, `rootRight`) => }
             }
         }
+
+        describe("when a node is rotated twice"){
+            it("should be reset if rotated left and then right"){
+                val rbt = new RedBlackTree[Int]()
+                rbt.insert(1)
+
+                val root = rbt.root
+                root.left = rbt.Node(Some(2), rbt.NodeColor.Black, root, rbt.nil, rbt.nil)
+                root.left.right = rbt.Node(Some(3), rbt.NodeColor.Black, root.left, rbt.nil, rbt.nil)
+                root.right = rbt.Node(Some(3), rbt.NodeColor.Black, root, rbt.nil, rbt.nil)
+
+                rbt.rightRotate(rbt.root)
+                rbt.leftRotate(rbt.root)
+
+                rbt.root should equal (root)
+                rbt.root.left should equal(root.left)
+                rbt.root.right should equal(root.right)
+            }
+
+            it("should be reset if rotated right and then left"){
+                val rbt = new RedBlackTree[Int]()
+                rbt.insert(1)
+
+                val root = rbt.root
+                root.left = rbt.Node(Some(2), rbt.NodeColor.Black, root, rbt.nil, rbt.nil)
+                root.left.right = rbt.Node(Some(3), rbt.NodeColor.Black, root.left, rbt.nil, rbt.nil)
+                root.right = rbt.Node(Some(3), rbt.NodeColor.Black, root, rbt.nil, rbt.nil)
+
+                rbt.leftRotate(rbt.root)
+                rbt.rightRotate(rbt.root)
+
+                rbt.root should equal (root)
+                rbt.root.left should equal(root.left)
+                rbt.root.right should equal(root.right)
+            }
+        }
     }
 }
