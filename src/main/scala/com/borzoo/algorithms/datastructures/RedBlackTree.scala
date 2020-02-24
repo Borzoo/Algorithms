@@ -4,7 +4,7 @@ import scala.annotation.tailrec
 
 class RedBlackTree[T](implicit ord: Ordering[T]) {
 
-    private[datastructures] val nil: Node = Node(None, NodeColor.Black, None, None, None)
+    private[datastructures] val nil: Node = Node(None, NodeColor.Black, null, null, null)
     private[datastructures] var root: Node = nil
 
     def all(): Seq[T] = root match {
@@ -16,15 +16,15 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
         def walk(node: Node, acc: List[T]): List[T] = {
             var acc2 = acc
 
-            acc2 = node.left.map {
+            acc2 = node.left match {
                 case `nil` => acc2
                 case l => walk(l, acc2)
-            }.get
+            }
 
-            acc2 = node.right.map {
+            acc2 = node.right match {
                 case `nil` => acc2
                 case r => walk(r, acc2)
-            }.get
+            }
 
             node.value.get +: acc2
         }
@@ -34,7 +34,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
 
     def insert(value: T): Unit = {
         if (root == nil) {
-            root = Node(Some(value), NodeColor.Black, Some(nil), Some(nil), Some(nil))
+            root = Node(Some(value), NodeColor.Black, nil, nil, nil)
         }
         else {
             var x = root
@@ -44,14 +44,14 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
             @tailrec
             def insert(): Unit = {
                 y match {
-                    case Some(`nil`) =>
-                        val node = Node(Some(value), NodeColor.Black, Some(x), Some(nil), Some(nil))
+                    case `nil` =>
+                        val node = Node(Some(value), NodeColor.Black, x, nil, nil)
                         if (ord.gt(value,  x.value.get)) {
-                            x.right = Some(node)
+                            x.right = node
                         }
-                        else x.left = Some(node)
-                    case Some(node) =>
-                        x = y.get
+                        else x.left = node
+                    case node =>
+                        x = y
                         y = if (ord.gt(value, node.value.get)) node.right else node.left
                         insert()
                 }
@@ -64,9 +64,9 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
 
     case class Node(value: Option[T]
                     , color: NodeColor
-                    , var parent: Option[Node]
-                    , var left: Option[Node]
-                    , var right: Option[Node])
+                    , var parent: Node
+                    , var left: Node
+                    , var right: Node)
 
     object NodeColor {
 
