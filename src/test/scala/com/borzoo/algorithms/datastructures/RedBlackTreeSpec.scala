@@ -78,5 +78,45 @@ class RedBlackTreeSpec extends AnyFunSpec with Matchers {
                 root should matchPattern { case rbt.Node(Some(1), _, `right`, `rootLeft`, `rightLeft` ) => }
             }
         }
+
+        describe("when a node is right-rotated"){
+            it("should throw an error if its left child is nil"){
+                val rbt = new RedBlackTree[Int]()
+                rbt.insert(1)
+                rbt.root.right = rbt.Node(Some(2), rbt.NodeColor.Black, rbt.root, rbt.nil, rbt.nil)
+
+                an [IllegalStateException] should be thrownBy rbt.rightRotate(rbt.root)
+            }
+
+            it("should set the left child as root if root is rotated"){
+                val rbt = new RedBlackTree[Int]()
+                rbt.insert(1)
+                rbt.root.left = rbt.Node(Some(2), rbt.NodeColor.Black, rbt.root, rbt.nil, rbt.nil)
+
+                rbt.rightRotate(rbt.root)
+
+                rbt.root should matchPattern { case rbt.Node(Some(2), _, rbt.nil, _, _) => }
+            }
+
+            it("should rotate node correctly"){
+                val rbt = new RedBlackTree[Int]()
+                rbt.insert(1)
+
+                val root = rbt.root
+                val left = rbt.Node(Some(2), rbt.NodeColor.Black, root, rbt.nil, rbt.nil)
+                root.left = left
+                val leftRight = rbt.Node(Some(3), rbt.NodeColor.Black, left, rbt.nil, rbt.nil)
+                left.right = leftRight
+                val rootRight = rbt.Node(Some(3), rbt.NodeColor.Black, root, rbt.nil, rbt.nil)
+                root.right = rootRight
+                val leftLeft = left.left
+                val nil = rbt.nil
+
+                rbt.rightRotate(rbt.root)
+
+                rbt.root should matchPattern { case rbt.Node(Some(2), _, `nil`, `leftLeft`, `root`) => }
+                root should matchPattern { case rbt.Node(Some(1), _, `left`, `leftRight`, `rootRight`) => }
+            }
+        }
     }
 }

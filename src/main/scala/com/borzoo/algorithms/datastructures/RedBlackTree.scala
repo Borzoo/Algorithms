@@ -62,6 +62,20 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
     private[datastructures] def rightRotate(node: Node): Unit = {
         if(node.left == nil)
             throw new IllegalStateException()
+
+        val left = node.left
+        node.left = left.right
+
+        if(left.right != nil)
+            left.right.parent = node
+
+        left.parent = node.parent
+        left.right = node
+        node.parent = left
+
+        if(node == root) {
+            root = left
+        }
     }
 
     private[datastructures] def leftRotate(node: Node): Unit = {
