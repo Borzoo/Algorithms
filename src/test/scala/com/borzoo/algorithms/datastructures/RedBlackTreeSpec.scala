@@ -209,7 +209,7 @@ class RedBlackTreeSpec extends AnyFunSpec with Matchers with Inside {
                 rbt.insert(2)
                 rbt.insert(1)
                 rbt.insert(3)
-                val root = rbt.root;
+                val root = rbt.root
 
                 rbt.root.right should matchPattern { case rbt.Node(Some(3), rbt.NodeColor.Red, `root`, rbt.nil, rbt.nil) => }
                 rbt.root.left should matchPattern { case rbt.Node(Some(1), rbt.NodeColor.Red, `root`, rbt.nil, rbt.nil) => }
