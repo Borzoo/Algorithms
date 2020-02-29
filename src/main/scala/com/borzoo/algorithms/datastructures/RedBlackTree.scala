@@ -75,6 +75,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
 
         if(node == root) {
             root = left
+            root.color = NodeColor.Black
         }
     }
 
@@ -94,6 +95,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
 
         if(node == root) {
             root = right
+            right.color = NodeColor.Black
         }
     }
 
