@@ -3,6 +3,8 @@ package com.borzoo.algorithms.datastructures
 import scala.annotation.tailrec
 
 class RedBlackTree[T](implicit ord: Ordering[T]) {
+    def blackHeight(node: Node): Int = ???
+
 
     private[datastructures] val nil: Node = Node(None, NodeColor.Black, null, null, null)
     private[datastructures] var root: Node = nil
@@ -32,6 +34,32 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
         walk(root, List())
     }
 
+    def fixColors(node: Node): Unit = {
+        if(node.parent.color == NodeColor.Red){
+            if(node.parent == node.parent.parent.left){
+                val uncle = node.parent.parent.right
+                if(uncle.color == NodeColor.Red){
+                    node.parent.parent.color = NodeColor.Red
+                    uncle.color = NodeColor.Black
+                    node.parent.color = NodeColor.Black
+                    fixColors(node.parent.parent)
+                }
+            }
+            else{
+                val uncle = node.parent.parent.left
+                if(uncle.color == NodeColor.Red){
+                    node.parent.parent.color = NodeColor.Red
+                    uncle.color = NodeColor.Black
+                    node.parent.color = NodeColor.Black
+                    fixColors(node.parent.parent)
+                }
+            }
+        }
+        
+        if(root == node)
+            node.color = NodeColor.Black
+    }
+
     def insert(value: T): Unit = {
         if (root == nil) {
             root = Node(Some(value), NodeColor.Black, nil, nil, nil)
@@ -50,6 +78,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
                             x.right = node
                         }
                         else x.left = node
+                        fixColors(node)
                     case node =>
                         x = y
                         y = if (ord.gt(value, node.value.get)) node.right else node.left

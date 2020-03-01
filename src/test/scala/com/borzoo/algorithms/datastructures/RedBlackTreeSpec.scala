@@ -165,43 +165,47 @@ class RedBlackTreeSpec extends AnyFunSpec with Matchers with Inside {
 
             it("should be reset if rotated left and then right") {
                 val rbt = createTree
-                
+
                 rbt.rightRotate(rbt.root)
                 rbt.leftRotate(rbt.root)
-                
+
                 assertTree(rbt)
             }
 
             it("should be reset if rotated right and then left") {
                 val rbt = createTree
-                
+
                 rbt.leftRotate(rbt.root)
                 rbt.rightRotate(rbt.root)
-                
+
                 assertTree(rbt)
             }
-            
-            it("rotations should be commutative"){
+
+            it("rotations should be commutative") {
                 val rbt = createTree
-                
+
                 rbt.leftRotate(rbt.root)
                 rbt.rightRotate(rbt.root)
                 rbt.leftRotate(rbt.root)
                 rbt.leftRotate(rbt.root)
                 rbt.rightRotate(rbt.root)
                 rbt.rightRotate(rbt.root)
-                
+
                 assertTree(rbt)
             }
         }
 
         describe("when a node is inserted") {
+            def checkTreeProperties(rbt: RedBlackTree[Int]) = {
+                rbt.root.color should be(rbt.NodeColor.Black)
+
+            }
+
             it("should be black when the node is root") {
                 val rbt = new RedBlackTree[Int]()
                 rbt.insert(1)
-                rbt.insert(2)
 
-                rbt.root should matchPattern { case rbt.Node(Some(1), rbt.NodeColor.Black, _, _, _) => }
+                checkTreeProperties(rbt)
             }
 
             it("should be red when its parent is black") {
@@ -211,8 +215,59 @@ class RedBlackTreeSpec extends AnyFunSpec with Matchers with Inside {
                 rbt.insert(3)
                 val root = rbt.root
 
+                checkTreeProperties(rbt)
                 rbt.root.right should matchPattern { case rbt.Node(Some(3), rbt.NodeColor.Red, `root`, rbt.nil, rbt.nil) => }
                 rbt.root.left should matchPattern { case rbt.Node(Some(1), rbt.NodeColor.Red, `root`, rbt.nil, rbt.nil) => }
+            }
+
+            it("should fix colors when new node is in left subtree and node's parent and uncle are red") {
+                val rbt = new RedBlackTree[Int]()
+                rbt.insert(2)
+                rbt.insert(1)
+                rbt.insert(3)
+                rbt.insert(0)
+
+                checkTreeProperties(rbt)
+                inside(rbt.root) { case rbt.Node(Some(2), color, rbt.nil, l, r) =>
+                    color should be (rbt.NodeColor.Black)
+                    inside(l) { case rbt.Node(Some(1), color, lp, ll, rbt.nil) =>
+                        color should be (rbt.NodeColor.Black)
+                        lp should be(rbt.root)
+                        inside(ll) { case rbt.Node(Some(0), color, llp, rbt.nil, rbt.nil) =>
+                            color should be (rbt.NodeColor.Red)
+                            llp should be(l)
+                        }
+                    }
+                    inside(r) { case rbt.Node(Some(3), color, rp, rbt.nil, rbt.nil) =>
+                        color should be (rbt.NodeColor.Black)
+                        rp should be(rbt.root)
+                    }
+                }
+            }
+
+            it("should fix colors when new node is in right subtree and node's parent and uncle are red") {
+                val rbt = new RedBlackTree[Int]()
+                rbt.insert(2)
+                rbt.insert(1)
+                rbt.insert(3)
+                rbt.insert(4)
+
+                checkTreeProperties(rbt)
+                inside(rbt.root) { case rbt.Node(Some(2), color, rbt.nil, l, r) =>
+                    color should be (rbt.NodeColor.Black)
+                    inside(l) { case rbt.Node(Some(1), color, lp, rbt.nil, rbt.nil) =>
+                        color should be (rbt.NodeColor.Black)
+                        lp should be(rbt.root)
+                    }
+                    inside(r) { case rbt.Node(Some(3), color, rp, rbt.nil, rr) =>
+                        color should be (rbt.NodeColor.Black)
+                        rp should be(rbt.root)
+                        inside(rr) { case rbt.Node(Some(4), color, rrp, rbt.nil, rbt.nil) =>
+                            color should be (rbt.NodeColor.Red)
+                            rrp should be (r)
+                        }
+                    }
+                }
             }
         }
     }
