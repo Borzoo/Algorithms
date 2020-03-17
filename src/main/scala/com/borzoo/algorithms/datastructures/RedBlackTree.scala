@@ -3,7 +3,11 @@ package com.borzoo.algorithms.datastructures
 import scala.annotation.tailrec
 
 class RedBlackTree[T](implicit ord: Ordering[T]) {
-    def blackHeight(node: Node): Int = ???
+    private[datastructures] def blackHeight(node: Node): Int = node match {
+        case `nil` => 1
+        case Node(_, NodeColor.Red, _, left, right) => blackHeight(left) max blackHeight(right)
+        case Node(_, _, _, left, right) => (blackHeight(left) max blackHeight(right)) + 1
+    }
 
 
     private[datastructures] val nil: Node = Node(None, NodeColor.Black, null, null, null)
@@ -23,12 +27,15 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
                 case l => walk(l, acc2)
             }
 
+
+            acc2 = acc2 :+ node.value.get
+            
             acc2 = node.right match {
                 case `nil` => acc2
                 case r => walk(r, acc2)
             }
-
-            node.value.get +: acc2
+            
+            acc2
         }
 
         walk(root, List())
