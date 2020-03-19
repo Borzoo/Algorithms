@@ -48,7 +48,20 @@ class RedBlackTreeSpec extends AnyFunSpec with Matchers with Inside {
 
             it("should not violate tree properties after inserting items") {
                 for (testCase <- List(
-                    List(2, 1, 3))) {
+                    List(1),
+                    List(1, 2),
+                    List(2, 1),
+                    List(2, 1, 3),
+                    List(5, 7, 4, 1, -5, 2, 9, 100, 20, 1, 50, 2, 7, 8, -8, 0, 10, 15, 2, 1),
+                    List(11, 2, 14, 15, 1, 7, 5, 8, 4),
+                    3 to 1 by -1,
+                    5 to 1 by -1,
+                    100 to 1 by -1,
+                    1 to 3,
+                    1 to 5,
+                    1 to 100,
+                    List.fill(100)(5)
+                )) {
                     val rbt = new RedBlackTree[Int]()
                     testCase.foreach(rbt.insert)
 
