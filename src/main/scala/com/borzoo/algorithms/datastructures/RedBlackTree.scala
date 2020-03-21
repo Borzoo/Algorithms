@@ -27,7 +27,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
                 case `nil` => acc2
                 case r => walk(r, acc2)
             }
-            
+
             acc2
         }
 
@@ -113,6 +113,14 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
                 }
             }
         }
+    }
+    
+    @tailrec
+    final def treeMinimum(node: Node): Node = {
+        if(node.left == nil)
+            node
+        else
+            treeMinimum(node.left)
     }
 
     private[datastructures] def blackHeight(node: Node): Int = node match {

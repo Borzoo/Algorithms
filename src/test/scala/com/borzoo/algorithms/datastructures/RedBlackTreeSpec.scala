@@ -71,5 +71,21 @@ class RedBlackTreeSpec extends AnyFunSpec with Matchers with Inside {
                 }
             }
         }
+        
+        it("should be able to find the minimum"){
+            for(testCase <- List(
+                (List(1), 1),
+                (List(1, 2), 1),
+                (List(2, 1), 1),
+                (List(3, 4, 2, 1), 1),
+                (List(3, 4, 2, 3), 2),
+                (List(1, 6, 5, 3, 2), 1)
+            )){
+                val rbt = new RedBlackTree[Int]()
+                testCase._1.foreach(rbt.insert)
+                
+                rbt.treeMinimum(rbt.root).value should be(Some(testCase._2))
+            }
+        }
     }
 }
