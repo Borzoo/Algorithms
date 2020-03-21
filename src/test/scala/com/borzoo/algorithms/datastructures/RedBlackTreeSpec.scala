@@ -9,7 +9,9 @@ class RedBlackTreeSpec extends AnyFunSpec with Matchers with Inside {
 
         def checkTreeProperties(tree: RedBlackTree[Int]): Unit = {
             tree.root.color should be(tree.NodeColor.Black)
+            tree.nil.color should be(tree.NodeColor.Black)
             checkTreeNodeProperties(tree.root)
+            
 
             def checkTreeNodeProperties(treeNode: tree.Node): Unit = {
 
@@ -68,6 +70,40 @@ class RedBlackTreeSpec extends AnyFunSpec with Matchers with Inside {
                     checkTreeProperties(rbt)
                     rbt.root.parent should be(rbt.nil)
                     rbt.all should equal(testCase.sorted)
+                }
+            }
+        }
+        
+        describe("after deleting nodes"){
+            it("should have a nil root if the only node is deleted"){
+                val rbt = new RedBlackTree[Int]()
+                rbt.insert(1)
+                
+                rbt.delete(rbt.root)
+                
+                rbt.root should be(rbt.nil)
+                rbt.all() should equal(List())
+            }
+            
+            it("should not violate tree properties after deleting a node"){
+                for (testCase <- List(
+                    List(List(1, 2), List(2)),
+                    List(List(1, 2), List(1)),
+                    List(List(2, 1), List(1)),
+                    List(List(2, 1), List(2))
+                );
+                    itemsToInsert = testCase.head;
+                    itemsToDelete <- testCase.tail
+                     ) {
+                    
+                    val rbt = new RedBlackTree[Int]()
+                    itemsToInsert.foreach(rbt.insert)
+
+                    itemsToDelete.map(itemToDelete => rbt.allNodes().filter(_.value == Some(itemToDelete)).head).foreach(rbt.delete)
+                    
+                    checkTreeProperties(rbt)
+                    rbt.root.parent should be(rbt.nil)
+                    rbt.all should equal(itemsToInsert.diff(itemsToDelete))
                 }
             }
         }

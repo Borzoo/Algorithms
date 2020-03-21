@@ -6,13 +6,15 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
     private[datastructures] val nil: Node = Node(None, NodeColor.Black, null, null, null)
     private[datastructures] var root: Node = nil
 
-    def all(): Seq[T] = root match {
-        case value if value == nil => Seq.empty
+    def all(): Seq[T] = allNodes.map(_.value.get)
+
+    def allNodes(): Seq[Node] = root match {
+        case `nil` => Seq.empty
         case _ => walk(root)
     }
 
-    private def walk(root: Node): List[T] = {
-        def walk(node: Node, acc: List[T]): List[T] = {
+    private def walk(root: Node): List[Node] = {
+        def walk(node: Node, acc: List[Node]): List[Node] = {
             var acc2 = acc
 
             acc2 = node.left match {
@@ -21,7 +23,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
             }
 
 
-            acc2 = acc2 :+ node.value.get
+            acc2 = acc2 :+ node
 
             acc2 = node.right match {
                 case `nil` => acc2
@@ -121,6 +123,38 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
             node
         else
             treeMinimum(node.left)
+    }
+
+    def delete(node: Node): Unit = {
+        if (node.right == nil) {
+            val x = node.left
+            transplant(node, x)
+            x.color = node.color
+            if (x == nil)
+                x.color = NodeColor.Black
+            root.color = NodeColor.Black
+        }
+        else if (node.left == nil) {
+            val x = node.right
+            transplant(node, x)
+            x.color = node.color
+
+            if (x == nil)
+                x.color = NodeColor.Black
+
+            root.color = NodeColor.Black
+        }
+    }
+
+    private def transplant(node: Node, replacement: Node) = {
+        if (node == root) {
+            root = replacement
+        } else if (node == node.parent.left)
+            node.parent.left = replacement
+        else
+            node.parent.right = replacement
+
+        replacement.parent = node.parent
     }
 
     private[datastructures] def blackHeight(node: Node): Int = node match {
