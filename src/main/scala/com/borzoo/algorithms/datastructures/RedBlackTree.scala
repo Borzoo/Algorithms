@@ -35,7 +35,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
     }
 
     @tailrec
-    final def fixColors(node: Node): Unit = {
+    final def fixColorsAfterInsert(node: Node): Unit = {
         if (node == root)
             node.color = NodeColor.Black
 
@@ -46,19 +46,19 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
                     node.parent.parent.color = NodeColor.Red
                     uncle.color = NodeColor.Black
                     node.parent.color = NodeColor.Black
-                    fixColors(node.parent.parent)
+                    fixColorsAfterInsert(node.parent.parent)
                 }
                 else {
                     if (node == node.parent.right) {
                         leftRotate(node.parent)
-                        fixColors(node.left)
+                        fixColorsAfterInsert(node.left)
                     }
                     else {
                         node.parent.parent.color = NodeColor.Red
                         rightRotate(node.parent.parent)
                         node.parent.color = NodeColor.Black
                         node.color = NodeColor.Red
-                        fixColors(root)
+                        fixColorsAfterInsert(root)
                     }
                 }
             }
@@ -68,19 +68,19 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
                     node.parent.parent.color = NodeColor.Red
                     uncle.color = NodeColor.Black
                     node.parent.color = NodeColor.Black
-                    fixColors(node.parent.parent)
+                    fixColorsAfterInsert(node.parent.parent)
                 }
                 else {
                     if (node == node.parent.left) {
                         rightRotate(node.parent)
-                        fixColors(node.right)
+                        fixColorsAfterInsert(node.right)
                     }
                     else {
                         node.parent.parent.color = NodeColor.Red
                         leftRotate(node.parent.parent)
                         node.parent.color = NodeColor.Black
                         node.color = NodeColor.Red
-                        fixColors(root)
+                        fixColorsAfterInsert(root)
                     }
                 }
             }
@@ -105,7 +105,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
                             x.right = node
                         }
                         else x.left = node
-                        fixColors(node)
+                        fixColorsAfterInsert(node)
                     case node =>
                         x = y
                         y = if (ord.gt(value, node.value.get)) node.right else node.left
