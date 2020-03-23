@@ -116,33 +116,109 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
             }
         }
     }
-    
+
     @tailrec
     final def treeMinimum(node: Node): Node = {
-        if(node.left == nil)
+        if (node.left == nil)
             node
         else
             treeMinimum(node.left)
     }
 
     def delete(node: Node): Unit = {
+        val doubleColorNode = deleteAndReplaceNode(node)
+        doubleColorNode.map(fixColorsAfterDelete)
+    }
+
+    def deleteAndReplaceNode(node: Node): Option[Node] = {
         if (node.right == nil) {
             val x = node.left
             transplant(node, x)
-            x.color = node.color
-            if (x == nil)
-                x.color = NodeColor.Black
-            root.color = NodeColor.Black
+            if (node.color == NodeColor.Black) Some(x) else None
         }
         else if (node.left == nil) {
             val x = node.right
             transplant(node, x)
-            x.color = node.color
-
-            if (x == nil)
-                x.color = NodeColor.Black
-
-            root.color = NodeColor.Black
+            if (node.color == NodeColor.Black) Some(x) else None
+        }
+        else {
+            val y = treeMinimum(node.right)
+            val x = y.right
+            if(y.parent == node)
+                x.parent = y
+            else{
+                transplant(y, y.right)
+                y.right = node.right
+                y.right.parent = y
+            }
+            
+            transplant(node, y)
+            y.left = node.left
+            y.left.parent = y
+            val yColor = y.color
+            y.color = node.color
+            
+            if(yColor == NodeColor.Black) Some(x) else None
+        }
+    }
+    
+    def fixColorsAfterDelete(doubleColorNode: Node): Unit = {
+        if (doubleColorNode != root && doubleColorNode.color == NodeColor.Black) {
+            if (doubleColorNode == doubleColorNode.parent.right) {
+                val sibling = doubleColorNode.parent.left
+                if (sibling.color == NodeColor.Red) {
+                    doubleColorNode.parent.color = NodeColor.Red
+                    sibling.color = NodeColor.Black
+                    rightRotate(doubleColorNode.parent)
+                    fixColorsAfterDelete(doubleColorNode)
+                } else {
+                    if (sibling.left.color == NodeColor.Black && sibling.right.color == NodeColor.Black) {
+                        sibling.color = NodeColor.Red
+                        fixColorsAfterDelete(doubleColorNode.parent)
+                    }
+                    else if (sibling.left.color == NodeColor.Black) {
+                        sibling.right.color = NodeColor.Black
+                        sibling.color = NodeColor.Red
+                        leftRotate(sibling)
+                        fixColorsAfterDelete(doubleColorNode)
+                    } else {
+                        sibling.color = sibling.parent.color
+                        sibling.left.color = NodeColor.Black
+                        sibling.parent.color = NodeColor.Black
+                        rightRotate(sibling.parent)
+                        fixColorsAfterDelete(root)
+                    }
+                }
+            }
+            else {
+                val sibling = doubleColorNode.parent.right
+                if (sibling.color == NodeColor.Red) {
+                    doubleColorNode.parent.color = NodeColor.Red
+                    sibling.color = NodeColor.Black
+                    leftRotate(doubleColorNode.parent)
+                    fixColorsAfterDelete(doubleColorNode)
+                } else {
+                    if (sibling.left.color == NodeColor.Black && sibling.right.color == NodeColor.Black) {
+                        sibling.color = NodeColor.Red
+                        fixColorsAfterDelete(doubleColorNode.parent)
+                    }
+                    else if (sibling.right.color == NodeColor.Black) {
+                        sibling.left.color = NodeColor.Black
+                        sibling.color = NodeColor.Red
+                        rightRotate(sibling)
+                        fixColorsAfterDelete(doubleColorNode)
+                    } else {
+                        sibling.color = sibling.parent.color
+                        sibling.right.color = NodeColor.Black
+                        sibling.parent.color = NodeColor.Black
+                        leftRotate(sibling.parent)
+                        fixColorsAfterDelete(root)
+                    }
+                }
+            }
+        }
+        else {
+            doubleColorNode.color = NodeColor.Black
         }
     }
 

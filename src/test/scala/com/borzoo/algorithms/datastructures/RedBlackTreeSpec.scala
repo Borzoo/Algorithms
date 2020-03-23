@@ -90,7 +90,11 @@ class RedBlackTreeSpec extends AnyFunSpec with Matchers with Inside {
                     List(List(1, 2), List(2)),
                     List(List(1, 2), List(1)),
                     List(List(2, 1), List(1)),
-                    List(List(2, 1), List(2))
+                    List(List(2, 1), List(2)),
+                    List(List(2, 1), List(2, 1)),
+                    List(List(2, 1), List(1, 2)),
+                    List(1 to 100, 70 to 20 by -1),
+                    List(100 to 1 by -1, 20 to 70)
                 );
                     itemsToInsert = testCase.head;
                     itemsToDelete <- testCase.tail
@@ -103,7 +107,7 @@ class RedBlackTreeSpec extends AnyFunSpec with Matchers with Inside {
                     
                     checkTreeProperties(rbt)
                     rbt.root.parent should be(rbt.nil)
-                    rbt.all should equal(itemsToInsert.diff(itemsToDelete))
+                    rbt.all should equal(itemsToInsert.diff(itemsToDelete).sorted)
                 }
             }
         }
