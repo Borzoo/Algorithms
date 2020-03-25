@@ -105,7 +105,7 @@ class RedBlackTreeSpec extends AnyFunSpec with Matchers with Inside {
 
           itemsToDelete
             .map(itemToDelete =>
-              rbt.allNodes().filter(_.value == Some(itemToDelete)).head)
+              rbt.allNodes.filter(_.value.contains(itemToDelete)).head)
             .foreach(rbt.delete)
 
           checkTreeProperties(rbt)

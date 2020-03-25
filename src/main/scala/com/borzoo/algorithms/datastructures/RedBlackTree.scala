@@ -9,7 +9,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
 
   def all(): Seq[T] = allNodes.map(_.value.get)
 
-  def allNodes(): Seq[Node] = root match {
+  def allNodes: Seq[Node] = root match {
     case `nil` => Seq.empty
     case _     => walk(root)
   }
@@ -113,7 +113,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
 
   def delete(node: Node): Unit = {
     val doubleColorNode = deleteAndReplaceNode(node)
-    doubleColorNode.map(fixColorsAfterDelete)
+    doubleColorNode.foreach(fixColorsAfterDelete)
   }
 
   def deleteAndReplaceNode(node: Node): Option[Node] = {
@@ -202,7 +202,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
     }
   }
 
-  private def transplant(node: Node, replacement: Node) = {
+  private def transplant(node: Node, replacement: Node): Unit = {
     if (node == root) {
       root = replacement
     } else if (node == node.parent.left)
