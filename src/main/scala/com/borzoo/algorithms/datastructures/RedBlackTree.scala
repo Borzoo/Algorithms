@@ -14,26 +14,15 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
     }
 
     private def walk(root: Node): List[Node] = {
-        def walk(node: Node, acc: List[Node]): List[Node] = {
-            var acc2 = acc
-
-            acc2 = node.left match {
-                case `nil` => acc2
-                case l => walk(l, acc2)
-            }
-
-
-            acc2 = acc2 :+ node
-
-            acc2 = node.right match {
-                case `nil` => acc2
-                case r => walk(r, acc2)
-            }
-
-            acc2
+        @tailrec
+        def walk(nodes: List[(Node, Boolean)], acc: List[Node]): List[Node] = nodes match {
+            case Nil => acc
+            case (`nil`, _) :: t => walk(t, acc)
+            case (node, true) :: t => walk(t, node :: acc)
+            case (node, false) :: t => walk((node.right, false) :: (node, true) :: (node.left, false) :: t, acc)
         }
 
-        walk(root, List())
+        walk(List((root, false)), List())
     }
 
     @tailrec
@@ -144,24 +133,24 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
         else {
             val y = treeMinimum(node.right)
             val x = y.right
-            if(y.parent == node)
+            if (y.parent == node)
                 x.parent = y
-            else{
+            else {
                 transplant(y, y.right)
                 y.right = node.right
                 y.right.parent = y
             }
-            
+
             transplant(node, y)
             y.left = node.left
             y.left.parent = y
             val yColor = y.color
             y.color = node.color
-            
-            if(yColor == NodeColor.Black) Some(x) else None
+
+            if (yColor == NodeColor.Black) Some(x) else None
         }
     }
-    
+
     def fixColorsAfterDelete(doubleColorNode: Node): Unit = {
         if (doubleColorNode != root && doubleColorNode.color == NodeColor.Black) {
             if (doubleColorNode == doubleColorNode.parent.right) {
