@@ -1,4 +1,4 @@
-package com.borzoo.algorithms.datastructures
+package com.borzoo.algorithms.datastructures.trees.redblack
 
 import org.scalatest.Inside
 import org.scalatest.funspec.AnyFunSpec
@@ -8,15 +8,15 @@ class RedBlackTreeSpec extends AnyFunSpec with Matchers with Inside {
   describe("a red black tree") {
 
     def checkTreeProperties(tree: RedBlackTree[Int]): Unit = {
-      tree.root.color should be(tree.NodeColor.Black)
-      tree.nil.color should be(tree.NodeColor.Black)
+      tree.root.color should be(NodeColor.Black)
+      tree.nil.color should be(NodeColor.Black)
       checkTreeNodeProperties(tree.root)
 
-      def checkTreeNodeProperties(treeNode: tree.Node): Unit = {
+      def checkTreeNodeProperties(treeNode: Node[Int]): Unit = {
 
-        if (treeNode.color == tree.NodeColor.Red) {
-          treeNode.left.color should be(tree.NodeColor.Black)
-          treeNode.right.color should be(tree.NodeColor.Black)
+        if (treeNode.color == NodeColor.Red) {
+          treeNode.left.color should be(NodeColor.Black)
+          treeNode.right.color should be(NodeColor.Black)
         }
 
         if (treeNode != tree.nil) {

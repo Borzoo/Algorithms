@@ -1,22 +1,23 @@
-package com.borzoo.algorithms.datastructures
+package com.borzoo.algorithms.datastructures.trees.redblack
 
 import scala.annotation.tailrec
 
 class RedBlackTree[T](implicit ord: Ordering[T]) {
-  private[datastructures] val nil: Node =
+  private[redblack] val nil: Node[T] =
     Node(None, NodeColor.Black, null, null, null)
-  private[datastructures] var root: Node = nil
+  private[redblack] var root: Node[T] = nil
 
   def all(): Seq[T] = allNodes.map(_.value.get)
 
-  def allNodes: Seq[Node] = root match {
+  def allNodes: Seq[Node[T]] = root match {
     case `nil` => Seq.empty
     case _     => walk(root)
   }
 
-  private def walk(root: Node): List[Node] = {
+  private def walk(root: Node[T]): List[Node[T]] = {
     @tailrec
-    def walk(nodes: List[(Node, Boolean)], acc: List[Node]): List[Node] =
+    def walk(nodes: List[(Node[T], Boolean)],
+             acc: List[Node[T]]): List[Node[T]] =
       nodes match {
         case Nil               => acc
         case (`nil`, _) :: t   => walk(t, acc)
@@ -30,7 +31,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
   }
 
   @tailrec
-  final def fixColorsAfterInsert(node: Node): Unit = {
+  final def fixColorsAfterInsert(node: Node[T]): Unit = {
     if (node == root)
       node.color = NodeColor.Black
 
@@ -104,19 +105,19 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
   }
 
   @tailrec
-  final def treeMinimum(node: Node): Node = {
+  final def treeMinimum(node: Node[T]): Node[T] = {
     if (node.left == nil)
       node
     else
       treeMinimum(node.left)
   }
 
-  def delete(node: Node): Unit = {
+  def delete(node: Node[T]): Unit = {
     val doubleColorNode = deleteAndReplaceNode(node)
     doubleColorNode.foreach(fixColorsAfterDelete)
   }
 
-  def deleteAndReplaceNode(node: Node): Option[Node] = {
+  def deleteAndReplaceNode(node: Node[T]): Option[Node[T]] = {
     if (node.right == nil) {
       val x = node.left
       transplant(node, x)
@@ -146,7 +147,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
     }
   }
 
-  def fixColorsAfterDelete(doubleColorNode: Node): Unit = {
+  def fixColorsAfterDelete(doubleColorNode: Node[T]): Unit = {
     if (doubleColorNode != root && doubleColorNode.color == NodeColor.Black) {
       if (doubleColorNode == doubleColorNode.parent.right) {
         val sibling = doubleColorNode.parent.left
@@ -202,7 +203,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
     }
   }
 
-  private def transplant(node: Node, replacement: Node): Unit = {
+  private def transplant(node: Node[T], replacement: Node[T]): Unit = {
     if (node == root) {
       root = replacement
     } else if (node == node.parent.left)
@@ -213,7 +214,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
     replacement.parent = node.parent
   }
 
-  private[datastructures] def blackHeight(node: Node): Int = node match {
+  private[redblack] def blackHeight(node: Node[T]): Int = node match {
     case `nil` => 1
     case Node(_, NodeColor.Red, _, left, right) =>
       blackHeight(left) max blackHeight(right)
@@ -221,7 +222,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
       (blackHeight(left) max blackHeight(right)) + 1
   }
 
-  private[datastructures] def rightRotate(node: Node): Unit = {
+  private[redblack] def rightRotate(node: Node[T]): Unit = {
     if (node.left == nil)
       throw new IllegalStateException()
 
@@ -246,7 +247,7 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
     }
   }
 
-  private[datastructures] def leftRotate(node: Node): Unit = {
+  private[redblack] def leftRotate(node: Node[T]): Unit = {
     if (node.right == nil)
       throw new IllegalStateException()
 
@@ -270,23 +271,4 @@ class RedBlackTree[T](implicit ord: Ordering[T]) {
       right.color = NodeColor.Black
     }
   }
-
-  sealed trait NodeColor {}
-
-  private[datastructures] case class Node(value: Option[T],
-                                          var color: NodeColor,
-                                          var parent: Node,
-                                          var left: Node,
-                                          var right: Node) {
-    override def toString: String = value.getOrElse("empty").toString
-  }
-
-  private[datastructures] object NodeColor {
-
-    case object Red extends NodeColor
-
-    case object Black extends NodeColor
-
-  }
-
 }
